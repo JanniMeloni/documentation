@@ -1,16 +1,22 @@
+// Bsp: Simple Insert...
 INSERT INTO ZPS_PROJECT VALUES ('001', 'Test', '', '') "Successful!!!)
-
-" Zielstatus "abgeschlossen" erreicht bei E0008 und I1005:
-INSERT INTO CRM_JEST VALUES ('001', '005056A644F61ED7B18AC36A56BC68F4', 'E0008', '', '001')
-INSERT INTO CRM_JEST VALUES ('001', '005056A644F61ED7B18AC36A56BC68F4', 'I1005', '', '001')
-
-
-SELECT a.object_id from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE b.OBJNR = '005056A644F61ED7B18AC36A56BC68F4' and b.inact = ''
-
-SELECT a.object_id, b.objnr, b.stat, b.inact, b.chgnr from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE a.object_id = '0000400459'
 
 // BSP: Insert mit dyanamischem Select: 
 INSERT INTO ZPS_PROJECT VALUES ('001', (SELECT a.object_id from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE b.OBJNR = '005056A644F61ED7B18AC36A56BC68F4' and b.inact = '' LIMIT 1), '', '')
 
-// Insert Zielstatus abgeschlossen
+// CRM SQL Statements
+
+// Ermittlung Ticket-ID bei bekannter GUID 
+SELECT a.object_id, a.process_type from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE b.OBJNR = '005056A644F61ED7B18AC36A56BC68F4' and b.inact = ''
+
+SELECT a.object_id, b.objnr, b.stat, b.inact, b.chgnr from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE a.object_id = '0000400459'
+
+// INSERT: Zielstatus "abgeschlossen" erreicht bei E0008 und I1005:
+INSERT INTO CRM_JEST VALUES ('001', '005056A644F61ED7B18AC36A56BC68F4', 'E0008', '', '001')
+INSERT INTO CRM_JEST VALUES ('001', '005056A644F61ED7B18AC36A56BC68F4', 'I1005', '', '001')
+
+// INSERT: Zielstatus mittels bekannter Object-ID setzen...
 INSERT INTO CRM_JEST VALUES ('001', (SELECT b.objnr from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE a.object_id = '0000xxxxxx' LIMIT 1), 'E0008', '', '001')
+
+// UPDATE crm_jest mittels bekannter Objekt-ID...
+Update CRM_JEST SET inact = 'X' where objnr = (SELECT b.objnr from crmd_orderadm_h as a INNER JOIN CRM_JEST as b ON a.guid = b.objnr WHERE a.object_id = '0000xxxxxx' LIMIT 1) and stat = 'xxxx'
